@@ -1,0 +1,19 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: dev
+    container_name: senac_music_share_api
+    ports:
+      - "${PORT:-3000}:3000"
+    environment:
+      - PORT=3000
+      - HOST=0.0.0.0
+      - NODE_ENV=development
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+      - /app/node_modules
+    restart: unless-stopped

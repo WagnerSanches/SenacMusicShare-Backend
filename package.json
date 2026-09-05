@@ -1,0 +1,27 @@
+{
+  "name": "senac-music-share-backend",
+  "version": "1.0.0",
+  "description": "SenacMusicShare Backend API using Fastify",
+  "main": "src/server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js"
+  },
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "keywords": [
+    "fastify",
+    "nodejs",
+    "music"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "fastify": "^5.2.1"
+  },
+  "devDependencies": {
+    "pino-pretty": "^13.0.0"
+  }
+}
