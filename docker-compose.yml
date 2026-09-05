@@ -1,19 +1,68 @@
 services:
   api:
     build:
-      context: .
+      context: ./api
       dockerfile: Dockerfile
       target: dev
-    container_name: senac_music_share_api
+    container_name: music_share_api
     ports:
-      - "${PORT:-3000}:3000"
+      - "${API_PORT:-3000}:3000"
     environment:
       - PORT=3000
       - HOST=0.0.0.0
       - NODE_ENV=development
+      - WORKER_ENRICH_URL=http://worker:3001/enrich
     env_file:
-      - .env
+      - path: ./api/.env
+        required: false
     volumes:
-      - .:/app
+      - ./api:/app
       - /app/node_modules
+    depends_on:
+      - worker
     restart: unless-stopped
+
+  worker:
+    build:
+      context: ./worker
+      dockerfile: Dockerfile
+      target: dev
+    container_name: music_share_worker
+    ports:
+      - "${WORKER_PORT:-3001}:3001"
+    environment:
+      - PORT=3001
+      - HOST=0.0.0.0
+      - NODE_ENV=development
+      - DATABASE_URL=postgres://music_share:***@db:5432/music_share
+    env_file:
+      - path: ./worker/.env
+        required: false
+    volumes:
+      - ./worker:/app
+      - /app/node_modules
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  db:
+    image: postgres:16-alpine
+    container_name: music_share_db
+    environment:
+      - POSTGRES_USER=music_share
+      - POSTGRES_PASSWORD=***
+      - POSTGRES_DB=music_share
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    volumes:
+      - music_share_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U music_share -d music_share"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    restart: unless-stopped
+
+volumes:
+  music_share_pgdata:

@@ -1,0 +1,33 @@
+{
+  "name": "music-share-worker",
+  "version": "1.0.0",
+  "description": "Music Share Worker — enriches posts with streaming links (Odesli) and persists them",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/src/server.js",
+    "dev": "tsx watch src/server.ts",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "eslint \"src/**/*.ts\" \"test/**/*.ts\"",
+    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\""
+  },
+  "dependencies": {
+    "fastify": "^5.2.0",
+    "pg": "^8.13.1",
+    "pino": "^9.5.0",
+    "pino-pretty": "^13.0.0",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "@types/pg": "^8.11.10",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
+  }
+}
