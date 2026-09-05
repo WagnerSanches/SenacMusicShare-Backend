@@ -1,12 +1,8 @@
 import type { FastifyInstance } from 'fastify';
 import { z } from 'zod';
 import type { SpotifyClient } from '../modules/spotify/spotify.client.js';
-import {
-  SpotifyAuthError,
-  SpotifyRateLimitError,
-  SpotifySearchError,
-} from '../modules/spotify/spotify.errors.js';
-import { HttpError, badRequest, upstreamError } from '../lib/http-error.js';
+import { badRequest } from '../lib/http-error.js';
+import { mapSpotifyErrorToHttp } from '../lib/spotify-error-mapper.js';
 
 /**
  * GET /track-search?q=<text>[&limit=<n>]
@@ -54,17 +50,6 @@ async function searchAndMapErrors(
   try {
     return await spotify.searchTracks(options);
   } catch (error) {
-    if (error instanceof SpotifyRateLimitError) {
-      throw new HttpError(429, `[track-search.route] Upstream rate limit: ${error.message}`);
-    }
-    if (error instanceof SpotifyAuthError) {
-      // Missing/bad credentials means the service can't search at all —
-      // 503 tells clients this is a server-side configuration problem.
-      throw new HttpError(503, `[track-search.route] Spotify auth failed: ${error.message}`);
-    }
-    if (error instanceof SpotifySearchError) {
-      throw upstreamError(`[track-search.route] Spotify search failed: ${error.message}`);
-    }
-    throw error;
+    mapSpotifyErrorToHttp(error, 'track-search.route');
   }
 }

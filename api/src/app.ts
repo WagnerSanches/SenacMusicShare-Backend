@@ -5,6 +5,7 @@ import { HttpError } from './lib/http-error.js';
 import { createSpotifyAuth } from './modules/spotify/spotify.auth.js';
 import { createSpotifyClient } from './modules/spotify/spotify.client.js';
 import { registerTrackSearchRoute } from './routes/track-search.route.js';
+import { registerSearchMusicRoute } from './routes/search-music.route.js';
 
 /**
  * Builds the Fastify instance without calling .listen() — so tests can
@@ -21,6 +22,7 @@ export function buildApp(options: { loggerInstance?: typeof logger } = {}): Fast
   const spotifyClient = createSpotifyClient({ tokenProvider: spotifyAuth });
 
   registerTrackSearchRoute(app, spotifyClient);
+  registerSearchMusicRoute(app, spotifyClient);
   registerHealthRoutes(app);
   return app;
 }
